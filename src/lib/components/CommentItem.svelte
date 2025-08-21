@@ -1,17 +1,18 @@
 <script>
   import { supabase } from '$lib/supabase.js';
-  import { user } from '$lib/stores.js';
+  import { user, authMode, showAuthModal } from '$lib/stores.js';
   import { createEventDispatcher } from 'svelte';
+  import CommentItem from './CommentItem.svelte';
 
   let { comment, formatTimeAgo, postId, depth = 0 } = $props();
 
   const dispatch = createEventDispatcher();
 
-  let hasUpvoted = false;
-  let loading = false;
-  let showReplyForm = false;
-  let replyText = '';
-  let submitting = false;
+  let hasUpvoted = $state(false);
+  let loading = $state(false);
+  let showReplyForm = $state(false);
+  let replyText = $state('');
+  let submitting = $state(false);
 
   $effect(() => {
     if ($user && comment) {
@@ -40,8 +41,15 @@
     if (!$user || loading) return;
     
     loading = true;
+    const originalUpvoted = hasUpvoted;
+    const originalCount = comment.upvotes;
+    
     try {
       if (hasUpvoted) {
+        // Optimistically update
+        hasUpvoted = false;
+        comment.upvotes = Math.max(0, comment.upvotes - 1);
+        
         const { error } = await supabase
           .from('comment_upvotes')
           .delete()
@@ -49,9 +57,11 @@
           .eq('user_id', $user.id);
         
         if (error) throw error;
-        hasUpvoted = false;
-        comment.upvotes--;
       } else {
+        // Optimistically update
+        hasUpvoted = true;
+        comment.upvotes = comment.upvotes + 1;
+        
         const { error } = await supabase
           .from('comment_upvotes')
           .insert([{
@@ -60,11 +70,12 @@
           }]);
         
         if (error) throw error;
-        hasUpvoted = true;
-        comment.upvotes++;
       }
     } catch (error) {
       console.error('Error toggling upvote:', error);
+      // Revert optimistic updates on error
+      hasUpvoted = originalUpvoted;
+      comment.upvotes = originalCount;
     } finally {
       loading = false;
     }
@@ -130,6 +141,13 @@
       >
         reply
       </button>
+    {:else if !$user && depth < 5}
+      <button 
+        class="reply-btn" 
+        onclick={() => {authMode.set('login'); showAuthModal.set(true);}}
+      >
+        reply (login required)
+      </button>
     {/if}
   </div>
 
@@ -162,7 +180,7 @@
   {#if comment.children && comment.children.length > 0}
     <div class="comment-children">
       {#each comment.children as childComment}
-        <svelte:self 
+        <CommentItem 
           comment={childComment} 
           {formatTimeAgo} 
           {postId}

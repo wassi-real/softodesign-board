@@ -90,8 +90,15 @@
     if (!$user || upvoteLoading) return;
     
     upvoteLoading = true;
+    const originalUpvoted = hasUpvoted;
+    const originalCount = post.upvotes;
+    
     try {
       if (hasUpvoted) {
+        // Optimistically update
+        hasUpvoted = false;
+        post.upvotes = Math.max(0, post.upvotes - 1);
+        
         const { error } = await supabase
           .from('upvotes')
           .delete()
@@ -99,9 +106,11 @@
           .eq('user_id', $user.id);
         
         if (error) throw error;
-        hasUpvoted = false;
-        post.upvotes--;
       } else {
+        // Optimistically update
+        hasUpvoted = true;
+        post.upvotes = post.upvotes + 1;
+        
         const { error } = await supabase
           .from('upvotes')
           .insert([{
@@ -110,11 +119,12 @@
           }]);
         
         if (error) throw error;
-        hasUpvoted = true;
-        post.upvotes++;
       }
     } catch (error) {
       console.error('Error toggling upvote:', error);
+      // Revert optimistic updates on error
+      hasUpvoted = originalUpvoted;
+      post.upvotes = originalCount;
     } finally {
       upvoteLoading = false;
     }

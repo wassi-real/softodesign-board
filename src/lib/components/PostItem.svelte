@@ -7,8 +7,8 @@
 
   const dispatch = createEventDispatcher();
 
-  let hasUpvoted = false;
-  let loading = false;
+  let hasUpvoted = $state(false);
+  let loading = $state(false);
 
   // Check upvote status when user or post changes
   let lastUserId = null;
@@ -58,6 +58,8 @@
         
         if (error) throw error;
         hasUpvoted = false;
+        // Optimistically update the local count
+        post.upvotes = Math.max(0, post.upvotes - 1);
       } else {
         // Add upvote
         const { error } = await supabase
@@ -69,11 +71,22 @@
         
         if (error) throw error;
         hasUpvoted = true;
+        // Optimistically update the local count
+        post.upvotes = post.upvotes + 1;
       }
       
+      // Call the callback to refresh the parent list if needed
       onupvoteChanged();
     } catch (error) {
       console.error('Error toggling upvote:', error);
+      // Revert optimistic update on error
+      if (!hasUpvoted) {
+        // We tried to add but failed, so revert the addition
+        post.upvotes = Math.max(0, post.upvotes - 1);
+      } else {
+        // We tried to remove but failed, so revert the removal
+        post.upvotes = post.upvotes + 1;
+      }
     } finally {
       loading = false;
     }

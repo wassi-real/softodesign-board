@@ -1,15 +1,15 @@
 <script>
   import { supabase } from '$lib/supabase.js';
-  import { user } from '$lib/stores.js';
+  import { user, authMode, showAuthModal } from '$lib/stores.js';
   import { onMount } from 'svelte';
   import CommentItem from './CommentItem.svelte';
 
   let { postId } = $props();
 
-  let comments = [];
-  let newComment = '';
-  let loading = false;
-  let submitting = false;
+  let comments = $state([]);
+  let newComment = $state('');
+  let loading = $state(false);
+  let submitting = $state(false);
 
   onMount(() => {
     loadComments();
@@ -145,6 +145,10 @@
         </button>
       </div>
     </div>
+  {:else}
+    <div class="auth-prompt">
+      <p>Please <button class="link-btn" onclick={() => {authMode.set('login'); showAuthModal.set(true);}}>login</button> or <button class="link-btn" onclick={() => {authMode.set('signup'); showAuthModal.set(true);}}>sign up</button> to comment.</p>
+    </div>
   {/if}
 
   {#if loading}
@@ -208,5 +212,20 @@
 
   .comments-list {
     margin-top: 20px;
+  }
+
+  .auth-prompt {
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 25px;
+    text-align: center;
+  }
+
+  .auth-prompt p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 14pt;
   }
 </style>
