@@ -7,6 +7,18 @@
 
 	let { children } = $props();
 
+	let isMobileMenuOpen = $state(false);
+
+	function toggleMobileMenu() {
+		isMobileMenuOpen = !isMobileMenuOpen;
+	}
+
+	function closeMobileMenu() {
+		isMobileMenuOpen = false;
+	}
+
+
+
 	onMount(async () => {
 		try {
 			// Get initial session
@@ -144,27 +156,57 @@
 	<header class="header">
 		<div class="header-content">
 			<div class="logo">
-				<a href="/" style="color: white; text-decoration: none;">SoftoDesign Board</a>
+				<a href="/" style="color: white; text-decoration: none; display: flex; align-items: center; gap: 10px;" onclick={closeMobileMenu}>
+					<img src="/logo.png" alt="SoftoDesign Board Logo" class="logo-image" />
+					<span>SoftoDesign Board</span>
+				</a>
 			</div>
-			<nav class="nav-links">
+			
+			<!-- Desktop Navigation -->
+			<nav class="nav-links desktop-nav">
 				<a href="/">new</a>
 				<a href="/past">past</a>
 				<a href="/submit">submit</a>
 				{#if $user}
-					<span style="color: white;">Welcome, <a href="/profile" class="username-link">{$user.profile?.username || 'User'}</a>!</span>
+					<span style="color: white;">Welcome, <a href="/profile/{$user.profile?.username || 'user'}" class="username-link">{$user.profile?.username || 'User'}</a>!</span>
 					<button onclick={logout}>logout</button>
 				{:else}
 					<button onclick={openLogin}>login</button>
 					<button onclick={openSignup}>signup</button>
 				{/if}
 			</nav>
+
+			<!-- Mobile Hamburger Menu Button -->
+			<button class="mobile-menu-btn" onclick={toggleMobileMenu} aria-label="Toggle menu">
+				<span class="hamburger-line" class:open={isMobileMenuOpen}></span>
+				<span class="hamburger-line" class:open={isMobileMenuOpen}></span>
+				<span class="hamburger-line" class:open={isMobileMenuOpen}></span>
+			</button>
 		</div>
+
+		<!-- Mobile Navigation -->
+		{#if isMobileMenuOpen}
+			<nav class="mobile-nav">
+				<a href="/" onclick={closeMobileMenu}>new</a>
+				<a href="/past" onclick={closeMobileMenu}>past</a>
+				<a href="/submit" onclick={closeMobileMenu}>submit</a>
+				{#if $user}
+					<a href="/profile/{$user.profile?.username || 'user'}" onclick={closeMobileMenu}>Profile ({$user.profile?.username || 'User'})</a>
+					<button onclick={() => {logout(); closeMobileMenu();}}>logout</button>
+				{:else}
+					<button onclick={() => {openLogin(); closeMobileMenu();}}>login</button>
+					<button onclick={() => {openSignup(); closeMobileMenu();}}>signup</button>
+				{/if}
+			</nav>
+			<!-- Mobile Menu Overlay -->
+			<button class="mobile-overlay" onclick={closeMobileMenu} aria-label="Close menu"></button>
+		{/if}
 	</header>
 
 	<main class="main-content">
 		{@render children?.()}
 	</main>
-
+	<br>
 	<footer class="footer">
 		<div class="footer-content">
 			<div class="footer-links">

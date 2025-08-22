@@ -110,9 +110,9 @@
 
 <div class="comment-item" style="margin-left: {depth * 30}px;">
   <div class="comment-header">
-    <div class="comment-meta">
-             <strong>{comment.profiles?.username || 'Unknown'}</strong>
-      <span class="comment-time">{formatTimeAgo(comment.created_at)}</span>
+      <div class="comment-meta">
+             <strong><a href="/profile/{comment.profiles?.username || 'unknown'}" class="username-link">{comment.profiles?.username || 'Unknown'}</a></strong>
+    <span class="comment-time">{formatTimeAgo(comment.created_at)}</span>
       {#if $user}
         <button 
           class="upvote-btn small" 

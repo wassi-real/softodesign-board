@@ -2,6 +2,7 @@
   import { supabase } from '$lib/supabase.js';
   import { user } from '$lib/stores.js';
   import { createEventDispatcher } from 'svelte';
+  import { truncateText, renderRichText } from '$lib/utils.js';
 
   let { post, index, formatTimeAgo, onupvoteChanged = () => {} } = $props();
 
@@ -41,6 +42,10 @@
       // User hasn't upvoted this post
       hasUpvoted = false;
     }
+  }
+
+  function truncateDescription(text) {
+    return truncateText(text, 200);
   }
 
   async function toggleUpvote() {
@@ -120,7 +125,7 @@
       </div>
       
       <div class="post-meta">
-        {post.upvotes} points by {post.profiles?.username || 'Unknown'} 
+        {post.upvotes} points by <a href="/profile/{post.profiles?.username || 'unknown'}" class="username-link">{post.profiles?.username || 'Unknown'}</a> 
         {formatTimeAgo(post.created_at)} | 
         <span style="color: var(--accent);">{post.group_name}</span> |
         <a href="/post/{post.id}" style="color: var(--text-muted);">comments</a>
@@ -128,7 +133,12 @@
       
       {#if post.description}
         <div class="post-description">
-          {post.description}
+          {#if post.description.length > 200}
+            {@html renderRichText(truncateDescription(post.description))}
+            <a href="/post/{post.id}" class="read-more-link">read more</a>
+          {:else}
+            {@html renderRichText(post.description)}
+          {/if}
         </div>
       {/if}
     </div>

@@ -3,6 +3,7 @@
   import { user } from '$lib/stores.js';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
+  import { renderRichText } from '$lib/utils.js';
 
   let loading = false;
   let error = '';
@@ -112,11 +113,17 @@
           <textarea
             id="bio"
             bind:value={bio}
-            placeholder="Tell us about yourself..."
+            placeholder="Tell us about yourself... URLs will automatically become clickable links."
             maxlength="500"
             disabled={loading}
             rows="6"
           ></textarea>
+          {#if bio}
+            <div class="bio-preview-form">
+              <strong>Preview:</strong>
+              <div class="preview-content">{@html renderRichText(bio)}</div>
+            </div>
+          {/if}
         </div>
 
         {#if error}
@@ -149,11 +156,21 @@
         <strong>Email:</strong> {$user.email}
       </div>
       <div class="info-item">
-        <strong>Bio:</strong> {$user.profile?.bio || 'No bio set'}
+        <strong>Bio:</strong> 
+        {#if $user.profile?.bio}
+          <div class="bio-preview">{@html renderRichText($user.profile.bio)}</div>
+        {:else}
+          No bio set
+        {/if}
       </div>
       <div class="info-item">
         <strong>Member since:</strong> {new Date($user.profile?.created_at || $user.created_at).toLocaleDateString()}
       </div>
+      {#if $user.profile?.username}
+        <div class="info-item">
+          <strong>Public Profile:</strong> <a href="/profile/{$user.profile.username}" class="username-link">View Public Profile</a>
+        </div>
+      {/if}
     </div>
   {/if}
 
@@ -198,6 +215,36 @@
   }
 
   .info-item strong {
+    color: var(--text-primary);
+  }
+
+  .bio-preview {
+    margin-top: 8px;
+    padding: 10px;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    font-size: 13pt;
+    line-height: 1.5;
+  }
+
+  .bio-preview-form {
+    margin-top: 15px;
+    padding: 15px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+
+  .bio-preview-form strong {
+    color: var(--text-secondary);
+    font-size: 12pt;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .preview-content {
+    font-size: 14pt;
+    line-height: 1.5;
     color: var(--text-primary);
   }
 

@@ -46,24 +46,44 @@ a:hover {
   min-height: 100vh;
   border-left: 1px solid var(--border);
   border-right: 1px solid var(--border);
+  padding-top: 60px; /* Account for fixed header */
 }
 
 .header {
   background-color: var(--accent);
   padding: 12px 16px;
   border-bottom: 2px solid var(--border);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  width: 100%;
 }
 
 .header-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .logo {
   font-weight: bold;
   font-size: 18pt;
   color: white;
+}
+
+.logo-image {
+  height: 32px;
+  width: auto;
+  transition: opacity 0.2s ease;
+}
+
+.logo a:hover .logo-image {
+  opacity: 0.8;
 }
 
 .nav-links {
@@ -99,9 +119,96 @@ a:hover {
   background: rgba(255, 255, 255, 0.2);
 }
 
+/* Mobile Navigation Styles */
+.mobile-menu-btn {
+  display: none;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 30px;
+  height: 30px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 1001;
+}
+
+.hamburger-line {
+  width: 100%;
+  height: 3px;
+  background: white;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  transform-origin: 1px;
+}
+
+.hamburger-line.open:nth-child(1) {
+  transform: rotate(45deg);
+}
+
+.hamburger-line.open:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-line.open:nth-child(3) {
+  transform: rotate(-45deg);
+}
+
+.mobile-nav {
+  display: none;
+  flex-direction: column;
+  background: var(--accent);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 15px 16px;
+  gap: 15px;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-nav a,
+.mobile-nav button {
+  color: white;
+  text-decoration: none;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 16pt;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: color 0.2s;
+}
+
+.mobile-nav a:hover,
+.mobile-nav button:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.mobile-nav a:last-child,
+.mobile-nav button:last-child {
+  border-bottom: none;
+}
+
+.mobile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 998;
+}
+
 .main-content {
   padding: 20px;
-  padding-bottom: 120px; /* Add space for fixed footer */
+  padding-bottom: 120px; /* Reduced space for smaller footer */
+  min-height: calc(100vh - 60px); /* Account for header height */
 }
 
 .post-item {
@@ -337,6 +444,42 @@ h1, h2, h3 {
 }
 
 .username-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.username-link:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+/* Rich text link styles */
+.rich-link {
+  color: var(--accent);
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.rich-link:hover {
+  color: var(--accent-hover);
+  text-decoration: none;
+}
+
+.read-more-link {
+  color: var(--accent);
+  text-decoration: underline;
+  font-size: 12pt;
+  margin-left: 8px;
+}
+
+.read-more-link:hover {
+  color: var(--accent-hover);
+}
+
+/* Header username link (white) */
+.header .username-link {
   color: white;
   text-decoration: underline;
   font-size: inherit;
@@ -354,12 +497,13 @@ h1, h2, h3 {
 .footer {
   background: var(--bg-tertiary);
   border-top: 2px solid var(--border);
-  padding: 30px 0;
+  padding: 20px 0;
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   z-index: 100;
+  margin-top: 60px; /* Increased margin top */
 }
 
 .footer-content {
@@ -392,4 +536,307 @@ h1, h2, h3 {
 .footer-text {
   color: var(--text-muted);
   font-size: 12pt;
+}
+
+/* ================================================ */
+/* MOBILE RESPONSIVE STYLES */
+/* ================================================ */
+
+/* Tablet and Mobile Styles */
+@media (max-width: 768px) {
+  /* Header adjustments */
+  .header {
+    padding: 10px 16px;
+  }
+  
+  .container {
+    padding-top: 56px; /* Adjust for smaller header */
+    border-left: none;
+    border-right: none;
+  }
+
+  .header-content {
+    padding: 0 4px;
+  }
+
+  .logo {
+    font-size: 16pt;
+  }
+
+  .logo-image {
+    height: 28px;
+  }
+
+  /* Show mobile menu, hide desktop nav */
+  .desktop-nav {
+    display: none;
+  }
+
+  .mobile-menu-btn {
+    display: flex;
+  }
+
+  .mobile-nav {
+    display: flex;
+  }
+
+  /* Main content adjustments */
+  .main-content {
+    padding: 15px;
+    padding-bottom: 140px;
+  }
+
+  /* Post item adjustments */
+  .post-item {
+    padding: 15px;
+    margin-bottom: 12px;
+  }
+
+  .post-title {
+    font-size: 14pt;
+  }
+
+  .post-meta {
+    font-size: 11pt;
+  }
+
+  .post-description {
+    font-size: 13pt;
+    margin-left: 25px;
+  }
+
+  /* Form adjustments */
+  .modal {
+    width: 95%;
+    margin: 10px;
+    padding: 20px;
+  }
+
+  .modal h2 {
+    font-size: 18pt;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    padding: 10px 12px;
+    font-size: 13pt;
+  }
+
+  .btn {
+    padding: 10px 20px;
+    font-size: 13pt;
+  }
+
+  /* Footer adjustments */
+  .footer {
+    padding: 15px 0;
+  }
+
+  .footer-links {
+    gap: 20px;
+    font-size: 13pt;
+  }
+
+  .footer-text {
+    font-size: 11pt;
+  }
+
+  /* Comment section adjustments */
+  .comment-form {
+    padding: 15px;
+  }
+
+  .comment-form textarea {
+    padding: 10px;
+    font-size: 13pt;
+  }
+
+  .comment-item {
+    padding: 12px 0 12px 12px;
+  }
+
+  .comment-meta {
+    font-size: 11pt;
+  }
+
+  .comment-content {
+    font-size: 13pt;
+  }
+
+  /* Post detail page adjustments */
+  .post-detail {
+    max-width: 100%;
+  }
+
+  .post-header {
+    padding: 20px;
+  }
+
+  .post-title {
+    font-size: 20pt !important;
+  }
+
+  .post-meta {
+    font-size: 13pt !important;
+  }
+
+  .post-description {
+    font-size: 15pt !important;
+  }
+
+  /* Group filter adjustments */
+  .group-filter {
+    padding: 12px;
+    margin-bottom: 20px;
+  }
+
+  .group-filter label {
+    font-size: 13pt;
+  }
+
+  .group-filter select {
+    font-size: 13pt;
+    padding: 6px 10px;
+    margin-left: 8px;
+  }
+
+  /* Upvote button adjustments */
+  .upvote-btn {
+    font-size: 16pt;
+    padding: 6px 10px 6px 0;
+  }
+
+  .upvote-btn.small {
+    font-size: 11pt;
+    padding: 3px 6px;
+  }
+}
+
+/* Mobile Phone Styles */
+@media (max-width: 480px) {
+  .header {
+    padding: 8px 12px;
+  }
+
+  .container {
+    padding-top: 52px;
+  }
+
+  .logo {
+    font-size: 14pt;
+  }
+
+  .logo-image {
+    height: 24px;
+  }
+
+  .main-content {
+    padding: 10px;
+    padding-bottom: 160px;
+  }
+
+  .post-item {
+    padding: 12px;
+  }
+
+  .post-title {
+    font-size: 13pt;
+  }
+
+  .post-meta {
+    font-size: 10pt;
+  }
+
+  .post-description {
+    font-size: 12pt;
+    margin-left: 20px;
+  }
+
+  .modal {
+    width: 98%;
+    margin: 5px;
+    padding: 15px;
+  }
+
+  .modal h2 {
+    font-size: 16pt;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    padding: 8px 10px;
+    font-size: 12pt;
+  }
+
+  .btn {
+    padding: 8px 16px;
+    font-size: 12pt;
+  }
+
+  .footer-links {
+    gap: 15px;
+    font-size: 12pt;
+  }
+
+  .footer-text {
+    font-size: 10pt;
+  }
+
+  .comment-form {
+    padding: 12px;
+  }
+
+  .comment-form textarea {
+    padding: 8px;
+    font-size: 12pt;
+  }
+
+  .comment-item {
+    padding: 10px 0 10px 10px;
+  }
+
+  .comment-meta {
+    font-size: 10pt;
+  }
+
+  .comment-content {
+    font-size: 12pt;
+  }
+
+  .post-header {
+    padding: 15px;
+  }
+
+  .post-title {
+    font-size: 18pt !important;
+  }
+
+  .post-meta {
+    font-size: 12pt !important;
+  }
+
+  .post-description {
+    font-size: 14pt !important;
+  }
+
+  .upvote-section {
+    min-width: 40px;
+  }
+
+  .upvote-btn {
+    font-size: 14pt;
+    padding: 8px 12px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .username-link {
+    font-size: 12pt;
+  }
+
+  .rich-link {
+    font-size: 11pt;
+  }
 }

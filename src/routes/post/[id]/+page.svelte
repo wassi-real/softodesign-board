@@ -4,6 +4,7 @@
   import { user } from '$lib/stores.js';
   import { onMount } from 'svelte';
   import Comments from '$lib/components/Comments.svelte';
+  import { renderRichText } from '$lib/utils.js';
 
   let post = null;
   let loading = true;
@@ -184,14 +185,14 @@
         <div class="post-content">
           <h1 class="post-title">{post.title}</h1>
           <div class="post-meta">
-                         by <strong>{post.profiles?.username || 'Unknown'}</strong>  
+                         by <strong><a href="/profile/{post.profiles?.username || 'unknown'}" class="username-link">{post.profiles?.username || 'Unknown'}</a></strong>  
             {formatTimeAgo(post.created_at)} | 
             <span class="group-tag">{post.group_name}</span>
           </div>
           
           {#if post.description}
             <div class="post-description">
-              {post.description}
+              {@html renderRichText(post.description)}
             </div>
           {/if}
         </div>

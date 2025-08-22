@@ -2,6 +2,7 @@
   import { supabase } from '$lib/supabase.js';
   import { user, showAuthModal, authMode } from '$lib/stores.js';
   import { goto } from '$app/navigation';
+  import { renderRichText } from '$lib/utils.js';
 
   let title = '';
   let description = '';
@@ -106,14 +107,14 @@
 
       <div class="form-group">
         <label for="description">Description</label>
-        <textarea
-          id="description"
-          bind:value={description}
-          disabled={loading}
-          maxlength="2000"
-          placeholder="Add additional details about your post (optional)"
-          rows="6"
-        ></textarea>
+                 <textarea
+           id="description"
+           bind:value={description}
+           disabled={loading}
+           maxlength="2000"
+           placeholder="Add additional details about your post (optional). URLs will automatically become clickable links."
+           rows="6"
+         ></textarea>
       </div>
 
       {#if error}
